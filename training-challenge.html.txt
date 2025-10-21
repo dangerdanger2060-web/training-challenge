@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training Challenge</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #0d1f3c;
+    color: #ffffff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+  }
+  h1 {
+    margin-top: 20px;
+    color: #00bfff;
+  }
+  .week {
+    border: 2px solid #00bfff;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px;
+  }
+  .day {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border: 2px solid #00bfff;
+    margin: 5px;
+    border-radius: 50%;
+    cursor: pointer;
+    user-select: none;
+    font-weight: bold;
+  }
+  .day.completed {
+    background-color: #00bfff;
+    color: #0d1f3c;
+  }
+  .progress {
+    margin: 20px auto;
+    background-color: #1a2d50;
+    width: 80%;
+    border-radius: 10px;
+    height: 20px;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #00bfff;
+    border-radius: 10px;
+    transition: width 0.3s;
+  }
+  .message {
+    margin-top: 15px;
+    font-size: 1.1em;
+    color: #a8d0e6;
+  }
+</style>
+</head>
+<body>
+<h1>Training Challenge</h1>
+<div class="progress">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+<div id="weeksContainer"></div>
+<div class="message" id="message"></div>
+
+<script>
+const totalWeeks = 6;
+const daysPerWeek = 6; // Sunday rest
+let progress = 0;
+
+const messages = [
+  "Consistency builds strength.",
+  "Strong core, strong mind.",
+  "Keep going, you're leveling up!",
+  "Small steps every day lead to big gains.",
+  "Stay consistent, the results will come.",
+  "Push yourself, but respect your body."
+];
+
+function getRandomMessage() {
+  return messages[Math.floor(Math.random() * messages.length)];
+}
+
+function createTracker() {
+  const container = document.getElementById('weeksContainer');
+  for (let w = 1; w <= totalWeeks; w++) {
+    const weekDiv = document.createElement('div');
+    weekDiv.classList.add('week');
+    weekDiv.id = `week${w}`;
+    const weekTitle = document.createElement('h2');
+    weekTitle.textContent = `Week ${w}`;
+    weekDiv.appendChild(weekTitle);
+
+    for (let d = 1; d <= daysPerWeek; d++) {
+      const dayDiv = document.createElement('div');
+      dayDiv.classList.add('day');
+      dayDiv.textContent = d;
+      dayDiv.addEventListener('click', () => completeDay(w, d, dayDiv));
+      weekDiv.appendChild(dayDiv);
+    }
+
+    container.appendChild(weekDiv);
+    if (w > 1) weekDiv.style.display = 'none'; // lock future weeks
+  }
+}
+
+function completeDay(week, day, dayDiv) {
+  if (dayDiv.classList.contains('completed')) return;
+  dayDiv.classList.add('completed');
+  progress++;
+  updateProgress();
+
+  const currentWeekDiv = document.getElementById(`week${week}`);
+  const completedDays = currentWeekDiv.querySelectorAll('.day.completed').length;
+  if (completedDays === daysPerWeek && week < totalWeeks) {
+    // unlock next week
+    document.getElementById(`week${week + 1}`).style.display = 'block';
+    showMessage(`Week ${week} complete! Level Up!`);
+  } else {
+    showMessage(getRandomMessage());
+  }
+}
+
+function updateProgress() {
+  const totalDays = totalWeeks * daysPerWeek;
+  const progressPercent = (progress / totalDays) * 100;
+  document.getElementById('progressBar').style.width = progressPercent + '%';
+}
+
+function showMessage(msg) {
+  const messageDiv = document.getElementById('message');
+  messageDiv.textContent = msg;
+}
+
+createTracker();
+</script>
+</body>
+</html>
